@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function Learn() {
   return (
     <>
       	<Head>
@@ -16,21 +16,11 @@ export default function Home() {
         	<link rel="icon" href="/favicon.ico" />
       	</Head>
       	<div className='bg-slate-50 flex items-center justify-around min-h-screen'>
-		  	<Link href="/create">
-			<div className='bg-orange-300 rounded-md py-40 px-56 text-center text-5xl '>
-				<span>
-					Create
-				</span>
-			</div>
-			</Link>
-
-			<Link href="/learn">
-			<div className='bg-orange-300 rounded-md py-40 px-56 text-center text-5xl '>
+			<div className='bg-orange-300 py-40 px-56 text-center text-5xl '>
 				<span>
 					Learn
 				</span>
 			</div>
-			</Link>
       	</div>
     </>
   )
