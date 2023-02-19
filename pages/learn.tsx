@@ -12,7 +12,8 @@ import Create_input_div from '@/components/create_input_div'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Learn() {
-	const [toLearnList, settoLearnList] = React.useState([] as React.ReactElement[]);
+	let ctmp = { front: "test", back: "testBack"}
+	const [toLearnList, settoLearnList] = React.useState([<Learn_input_div {...ctmp} key={5} />]);
 	const [numRepititions, setNumRepititions] = React.useState(1);
 	const [shuffleMode, setShuffleMode] = React.useState(true);
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
@@ -58,7 +59,7 @@ export default function Learn() {
 					let frontC = frontBack[0];
 					let backC = frontBack[1];
 					let c = { front: frontC, back: backC };
-					cards.push(<Learn_input_div card={c} key={Math.random()}/>);
+					cards.push(<Learn_input_div {...c} key={Math.random()}/>);
 				}
 			});
 		};
@@ -76,7 +77,7 @@ export default function Learn() {
 			fileSelector?.classList.add("text-gray-700");
 			const f:File = fs[0];
 			const cards = parseFile(f);
-			settoLearnList(cards);
+			// settoLearnList(cards);
 			console.log("Set!", toLearnList)
 		} else {
 			fileSelector?.classList.add("text-red-400");
