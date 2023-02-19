@@ -4,12 +4,50 @@ import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import Link from 'next/link'
 import { parse } from 'path'
+import React, { useEffect } from 'react'
+import Learn_input_div from '@/components/learn_input_div'
+import { stringify } from 'querystring'
+import Create_input_div from '@/components/create_input_div'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Learn() {
+	const [toLearnList, settoLearnList] = React.useState([] as React.ReactElement[]);
+	const [numRepititions, setNumRepititions] = React.useState(1);
+	const [shuffleMode, setShuffleMode] = React.useState(true);
+	const [caseSensitive, setCaseSensitive] = React.useState(false);
+
+	useEffect(() => { console.log(toLearnList) }, [toLearnList])
+	useEffect(() => { console.log(numRepititions) }, [numRepititions])
+	useEffect(() => { console.log(shuffleMode) }, [shuffleMode])
+	useEffect(() => { console.log(caseSensitive) }, [caseSensitive])
+
+	function setShuffleState() {
+		if ((document.getElementById("shuffle_setter_on") as HTMLInputElement).checked) {
+			setShuffleMode(true);
+		} else if ((document.getElementById("shuffle_setter_off") as HTMLInputElement).checked) {
+			setShuffleMode(false);
+		}
+	}
+
+	function setCaseSensiState() {
+		if ((document.getElementById("case_sensitive_on") as HTMLInputElement).checked) {
+			setCaseSensitive(true);
+		} else if ((document.getElementById("case_sensitive_off") as HTMLInputElement).checked) {
+			setCaseSensitive(false);
+		}
+	}
+
+	function setRepState() {
+		let repititions = parseInt((document.getElementById("repititions_setter") as HTMLInputElement)?.value);
+		if (isNaN(repititions) || repititions < 1 || repititions > 10) {
+			repititions = 1;
+		}
+		setNumRepititions(repititions)
+	}
+
 	function parseFile(file: File) {
-		let cards:{ front: string, back: string }[] = [];
+		let cards:React.ReactElement[] = [];
 		const reader = new FileReader();
 		reader.onload = function (e) {
             const text = e.target?.result;
@@ -19,7 +57,8 @@ export default function Learn() {
 				if (frontBack.length == 2) {
 					let frontC = frontBack[0];
 					let backC = frontBack[1];
-					cards.push({ front: frontC, back: backC })
+					let c = { front: frontC, back: backC };
+					cards.push(<Learn_input_div card={c} key={Math.random()}/>);
 				}
 			});
 		};
@@ -36,9 +75,9 @@ export default function Learn() {
 			fileSelector?.classList.remove("text-red-400");
 			fileSelector?.classList.add("text-gray-700");
 			const f:File = fs[0];
-			console.log(f);
-
 			const cards = parseFile(f);
+			settoLearnList(cards);
+			console.log("Set!", toLearnList)
 		} else {
 			fileSelector?.classList.add("text-red-400");
 		}
@@ -60,12 +99,43 @@ export default function Learn() {
 						<span className="text-md font-medium text-gray-700">Back</span>
 					</div>
 				</div>
-				{/* {inputList} */}
-				<div className=" relative my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-fit group">
-					<input className='text-sm text-gray-700 hover:cursor-pointer file:bg-white file:border-0 file:text-gray-700 file:font-medium group-hover:file:bg-slate-100' type="file" id="file-selector" accept=".csv"></input>
+				{toLearnList}
+				{/* Uploader */}
+				<div className="relative my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-80 group">
+					<input className='text-sm text-gray-700 w-48 hover:cursor-pointer file:bg-white file:border-0 file:text-gray-700 file:font-medium group-hover:file:bg-slate-100' type="file" id="file-selector" accept=".csv"></input>
 					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer' onClick={uploadCards}>Upload</span>
 				</div>
-			ß</div>
+				{/* Repitition setter */}
+				<div className='relative w-80 group my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center group'>
+					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer'>Number of repititions:</span>
+					<input id="repititions_setter" className='bg-white w-12 absolute right-12 text-gray-700 group-hover:bg-slate-100 text-sm' type="number" min="1" max="10" defaultValue="1" onChange={setRepState}/>
+				</div>
+				{/* Shuffle setter */}
+				<div className='relative w-80 group my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center group'>
+					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer'>Shuffle deck:</span>
+					<div className='w-fit inline absolute right-12'>
+						<input name='on_off_suffle' id="shuffle_setter_on" className='bg-white w-fit ml-12 text-gray-700 group-hover:bg-slate-100 text-sm' type="radio" defaultChecked onChange={setShuffleState} />
+						<label className='text-sm font-medium text-gray-700 hover:cursor-pointer' htmlFor="shuffle_setter_on"> On</label>
+						<input name='on_off_suffle' id="shuffle_setter_off" className='bg-white w-fit ml-12 text-gray-700 group-hover:bg-slate-100 text-sm' type="radio" onChange={setShuffleState} />
+						<label className='text-sm font-medium text-gray-700 hover:cursor-pointer' htmlFor="shuffle_setter_off"> Off</label>
+					</div>
+
+				</div>
+				{/* Case sensitive setter */}
+				<div className='relative w-80 group my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center group'>
+					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer'>Case sensitive:</span>
+					<div className='w-fit inline absolute right-12'>
+						<input name='on_off_case' id="case_sensitive_on" className='bg-white w-fit ml-12 text-gray-700 group-hover:bg-slate-100 text-sm' type="radio" onChange={setCaseSensiState} />
+						<label className='text-sm font-medium text-gray-700 hover:cursor-pointer' htmlFor="case_sensitive_on"> On</label>
+						<input name='on_off_case' id="case_sensitive_off" className='bg-white w-fit ml-12 text-gray-700 group-hover:bg-slate-100 text-sm' type="radio" defaultChecked onChange={setCaseSensiState} />
+						<label className='text-sm font-medium text-gray-700 hover:cursor-pointer' htmlFor="case_sensitive_off"> Off</label>
+					</div>
+				</div>
+				{/* Start button */}
+				<div className='w-fit text-center mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center group'>
+					<span className='text-md font-medium text-gray-700 hover:cursor-pointer'>start</span>
+				</div>
+			</div>
 		</div>
 
     </>

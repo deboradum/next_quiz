@@ -4,7 +4,6 @@ import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import Link from 'next/link'
 import Create_input_div from 'components/create_input_div'
-import { AiOutlinePlusCircle } from 'react-icons/Ai';
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -32,7 +31,7 @@ export default function Create() {
                 cards.push({ front: frontText, back: backText });
             }
         });
-        console.log(cards)
+
         return cards
     }
 
