@@ -3,10 +3,47 @@ import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import Link from 'next/link'
+import { parse } from 'path'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Learn() {
+	function parseFile(file: File) {
+		let cards:{ front: string, back: string }[] = [];
+		const reader = new FileReader();
+		reader.onload = function (e) {
+            const text = e.target?.result;
+            const lines = (text as string).split('\n');
+			lines.forEach((line) => {
+				const frontBack = line.split(",");
+				if (frontBack.length == 2) {
+					let frontC = frontBack[0];
+					let backC = frontBack[1];
+					cards.push({ front: frontC, back: backC })
+				}
+			});
+		};
+
+		reader.readAsText(file);
+
+		return cards
+	}
+
+	function uploadCards() {
+		const fileSelector = document.getElementById('file-selector');
+		const fs = (fileSelector as HTMLInputElement).files
+		if (fs != null && fs[0] != null) {
+			fileSelector?.classList.remove("text-red-400");
+			fileSelector?.classList.add("text-gray-700");
+			const f:File = fs[0];
+			console.log(f);
+
+			const cards = parseFile(f);
+		} else {
+			fileSelector?.classList.add("text-red-400");
+		}
+	}
+
   return (
     <>
       	<Head>
@@ -15,13 +52,22 @@ export default function Learn() {
         	<meta name="viewport" content="width=device-width, initial-scale=1" />
         	<link rel="icon" href="/favicon.ico" />
       	</Head>
-      	<div className='bg-slate-50 flex items-center justify-around min-h-screen'>
-			<div className='bg-orange-300 py-40 px-56 text-center text-5xl '>
-				<span>
-					Learn
-				</span>
-			</div>
-      	</div>
+		<div className='bg-slate-50 min-h-screen'>
+			<div className='sm:w-full md:w-2/4 flex flex-col justify-around mx-auto'>
+				<div className='my-4'>
+					<div className='flex flex-row justify-around'>
+						<span className="text-md font-medium text-gray-700">Front</span>
+						<span className="text-md font-medium text-gray-700">Back</span>
+					</div>
+				</div>
+				{/* {inputList} */}
+				<div className=" relative my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-fit group">
+					<input className='text-sm text-gray-700 hover:cursor-pointer file:bg-white file:border-0 file:text-gray-700 file:font-medium group-hover:file:bg-slate-100' type="file" id="file-selector" accept=".csv"></input>
+					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer' onClick={uploadCards}>Upload</span>
+				</div>
+			ß</div>
+		</div>
+
     </>
   )
 }
