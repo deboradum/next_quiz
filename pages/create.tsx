@@ -67,15 +67,15 @@ export default function Create() {
                         </div>
                     </div>
                     {inputList}
-                    <div className="my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-4 self-end w-fit">
-                        <span className='text-sm font-medium text-gray-700' onClick={addInputField}>Add</span>
+                    <div className="my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-4 self-end w-fit" onClick={addInputField}>
+                        <span className='text-sm font-medium text-gray-700' >Add</span>
                     </div>
-                    <div className="my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center w-fit">
-                        <span className='text-sm font-medium text-gray-700' onClick={downloadCards}>Download</span>
+                    <div className="my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center w-fit" onClick={downloadCards}>
+                        <span className='text-sm font-medium text-gray-700' >Download</span>
                     </div>
                     <Link className='self-center' href={{pathname: '/learn'}}>
-                    <div className="mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 w-fit">
-                        <span className='text-sm font-medium text-gray-700' onClick={createCards}>Learn!</span>
+                    <div className="mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 w-fit" onClick={createCards}>
+                        <span className='text-sm font-medium text-gray-700' >Learn!</span>
                     </div>
                     </Link>
 
