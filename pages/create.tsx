@@ -73,7 +73,7 @@ export default function Create() {
                     <div className="my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center w-fit">
                         <span className='text-sm font-medium text-gray-700' onClick={downloadCards}>Download</span>
                     </div>
-                    <Link className='self-center' href={{pathname: '/to-your-other-page', query: "data"}}>
+                    <Link className='self-center' href={{pathname: '/learn'}}>
                     <div className="mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 w-fit">
                         <span className='text-sm font-medium text-gray-700' onClick={createCards}>Learn!</span>
                     </div>

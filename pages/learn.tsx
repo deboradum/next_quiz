@@ -8,20 +8,15 @@ import React, { useEffect } from 'react'
 import Learn_input_div from '@/components/learn_input_div'
 import { stringify } from 'querystring'
 import Create_input_div from '@/components/create_input_div'
+import { createReadStream } from 'fs'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Learn() {
-	let ctmp = { front: "test", back: "testBack"}
-	const [toLearnList, settoLearnList] = React.useState([<Learn_input_div {...ctmp} key={5} />]);
+	const [toLearnList, settoLearnList] = React.useState([] as React.ReactElement[]);
 	const [numRepititions, setNumRepititions] = React.useState(1);
 	const [shuffleMode, setShuffleMode] = React.useState(true);
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
-
-	useEffect(() => { console.log(toLearnList) }, [toLearnList])
-	useEffect(() => { console.log(numRepititions) }, [numRepititions])
-	useEffect(() => { console.log(shuffleMode) }, [shuffleMode])
-	useEffect(() => { console.log(caseSensitive) }, [caseSensitive])
 
 	function setShuffleState() {
 		if ((document.getElementById("shuffle_setter_on") as HTMLInputElement).checked) {
@@ -48,37 +43,38 @@ export default function Learn() {
 	}
 
 	function parseFile(file: File) {
-		let cards:React.ReactElement[] = [];
-		const reader = new FileReader();
-		reader.onload = function (e) {
-            const text = e.target?.result;
-            const lines = (text as string).split('\n');
-			lines.forEach((line) => {
-				const frontBack = line.split(",");
-				if (frontBack.length == 2) {
-					let frontC = frontBack[0];
-					let backC = frontBack[1];
-					let c = { front: frontC, back: backC };
-					cards.push(<Learn_input_div {...c} key={Math.random()}/>);
-				}
-			});
-		};
+		return new Promise((resolve, reject) =>  {
+			let cards:React.ReactElement[] = [...toLearnList];
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				const text = e.target?.result;
+				const lines = (text as string).split('\n');
+				lines.forEach((line) => {
+					const frontBack = line.split(",");
+					if (frontBack.length == 2) {
+						let frontC = frontBack[0];
+						let backC = frontBack[1];
+						let c = { front: frontC, back: backC };
+						// cards.push(c)
+						cards.push(<Learn_input_div {...c} key={Math.random()}/>);
+					}
+				});
+				resolve(cards);
+			};
+			reader.readAsText(file);
+		})
 
-		reader.readAsText(file);
-
-		return cards
 	}
 
-	function uploadCards() {
+	async function uploadCards() {
 		const fileSelector = document.getElementById('file-selector');
 		const fs = (fileSelector as HTMLInputElement).files
 		if (fs != null && fs[0] != null) {
 			fileSelector?.classList.remove("text-red-400");
 			fileSelector?.classList.add("text-gray-700");
 			const f:File = fs[0];
-			const cards = parseFile(f);
-			// settoLearnList(cards);
-			console.log("Set!", toLearnList)
+			const cards = await parseFile(f) as React.ReactElement[];
+			settoLearnList(cards);
 		} else {
 			fileSelector?.classList.add("text-red-400");
 		}
@@ -93,7 +89,7 @@ export default function Learn() {
         	<link rel="icon" href="/favicon.ico" />
       	</Head>
 		<div className='bg-slate-50 min-h-screen'>
-			<div className='sm:w-full md:w-2/4 flex flex-col justify-around mx-auto'>
+			<div id='start-div' className='sm:w-full md:w-2/4 flex flex-col justify-around mx-auto'>
 				<div className='my-4'>
 					<div className='flex flex-row justify-around'>
 						<span className="text-md font-medium text-gray-700">Front</span>
@@ -102,7 +98,7 @@ export default function Learn() {
 				</div>
 				{toLearnList}
 				{/* Uploader */}
-				<div className="relative my-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-80 group">
+				<div className="relative mt-5 mb-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-80 group">
 					<input className='text-sm text-gray-700 w-48 hover:cursor-pointer file:bg-white file:border-0 file:text-gray-700 file:font-medium group-hover:file:bg-slate-100' type="file" id="file-selector" accept=".csv"></input>
 					<span className='text-sm font-medium text-gray-700 hover:cursor-pointer' onClick={uploadCards}>Upload</span>
 				</div>
@@ -136,6 +132,10 @@ export default function Learn() {
 				<div className='w-fit text-center mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center group'>
 					<span className='text-md font-medium text-gray-700 hover:cursor-pointer'>start</span>
 				</div>
+			</div>
+
+			<div id='quiz-div' className='bg-'>
+
 			</div>
 		</div>
 
