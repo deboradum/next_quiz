@@ -9,14 +9,18 @@ import Learn_input_div from '@/components/learn_input_div'
 import { stringify } from 'querystring'
 import Create_input_div from '@/components/create_input_div'
 import { createReadStream } from 'fs'
+import Card_learn_front from '@/components/card_learn_front'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Learn() {
-	const [toLearnList, settoLearnList] = React.useState([] as React.ReactElement[]);
+	const [toLearnList, settoLearnList] = React.useState([] as {front:string, back:string}[]);
 	const [numRepititions, setNumRepititions] = React.useState(1);
 	const [shuffleMode, setShuffleMode] = React.useState(true);
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
+	const [learningCardsInfo, setLearningCardsinfo] = React.useState([] as {front:string, back:string, repsLeft:number}[])
+
+	useEffect(() => {console.log(learningCardsInfo)} ,[learningCardsInfo])
 
 	function setShuffleState() {
 		if ((document.getElementById("shuffle_setter_on") as HTMLInputElement).checked) {
@@ -44,7 +48,7 @@ export default function Learn() {
 
 	function parseFile(file: File) {
 		return new Promise((resolve, reject) =>  {
-			let cards:React.ReactElement[] = [...toLearnList];
+			let cards:{front:string, back:string}[] = [...toLearnList];
 			const reader = new FileReader();
 			reader.onload = function (e) {
 				const text = e.target?.result;
@@ -56,7 +60,7 @@ export default function Learn() {
 						let backC = frontBack[1];
 						let c = { front: frontC, back: backC };
 						// cards.push(c)
-						cards.push(<Learn_input_div {...c} key={Math.random()}/>);
+						cards.push(c);
 					}
 				});
 				resolve(cards);
@@ -70,14 +74,64 @@ export default function Learn() {
 		const fileSelector = document.getElementById('file-selector');
 		const fs = (fileSelector as HTMLInputElement).files
 		if (fs != null && fs[0] != null) {
+			document.getElementById("nothing-uploaded")?.remove()
 			fileSelector?.classList.remove("text-red-400");
 			fileSelector?.classList.add("text-gray-700");
 			const f:File = fs[0];
-			const cards = await parseFile(f) as React.ReactElement[];
+			const cards = await parseFile(f) as {front:string, back:string}[];
 			settoLearnList(cards);
 		} else {
 			fileSelector?.classList.add("text-red-400");
 		}
+	}
+
+	function newWord() {
+		if (shuffleMode) {
+			console.log("Learning cards:", learningCardsInfo)
+			if (!learningCardsInfo.length) {
+				console.log("ALLE KAARTEN GEHAD EN GOED")
+				return
+			}
+			let cardList = [...learningCardsInfo];
+			let c = cardList[Math.floor(Math.random()*cardList.length)];
+			document.getElementById("quiz-div-frontback")!.innerHTML = c.front;
+		} else {
+		// Een state die bij houdt waar ik was
+		}
+	}
+
+	function createLearningCards() {
+		let cards:{front: string, back:string, repsLeft:number}[] = [];
+		toLearnList.map(c => {
+			const newC: {front: string, back:string, repsLeft:number} = {front:c.front, back:c.back, repsLeft:numRepititions};
+			cards.push(newC);
+		});
+		setLearningCardsinfo(cards);
+	}
+
+	function startLearning() {
+		if (toLearnList.length) {
+			document.getElementById("start-div")?.classList.add("hidden");
+			document.getElementById("quiz-div-holder")?.classList.remove("hidden");
+			document.getElementById("quiz-div-holder")?.classList.add("flex");
+			document.getElementById("quiz-div-holder")?.classList.add("min-h-screen");
+			// createLearningCards();
+			// newWord();
+		} else {
+			const textDiv = document.getElementById("text-div");
+			if (!textDiv?.firstChild) {
+				let el = document.createElement("p");
+				el.id = "nothing-uploaded";
+				el.innerHTML = "<br /> Please upload a word list";
+				el.classList.add("text-red-400");
+				textDiv?.appendChild(el);
+			}
+		}
+	}
+
+	function testfun() {
+		alert("test")
+		console.log("fired")
 	}
 
   return (
@@ -95,8 +149,13 @@ export default function Learn() {
 						<span className="text-md font-medium text-gray-700">Front</span>
 						<span className="text-md font-medium text-gray-700">Back</span>
 					</div>
+					<div id='text-div' className='flex flex-row justify-around'>
+
+					</div>
 				</div>
-				{toLearnList}
+				{toLearnList.map(c => (
+					<Learn_input_div {...c} key={Math.random()} />
+				))}
 				{/* Uploader */}
 				<div className="relative mt-5 mb-1 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:file:bg-slate-100 py-2 px-10 self-center w-80 group">
 					<input className='text-sm text-gray-700 w-48 hover:cursor-pointer file:bg-white file:border-0 file:text-gray-700 file:font-medium group-hover:file:bg-slate-100' type="file" id="file-selector" accept=".csv"></input>
@@ -129,14 +188,16 @@ export default function Learn() {
 					</div>
 				</div>
 				{/* Start button */}
-				<div className='w-fit text-center mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center group'>
-					<span className='text-md font-medium text-gray-700 hover:cursor-pointer'>start</span>
+				<div className='w-fit text-center mt-1 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center group' onClick={startLearning}>
+					<span className='text-md font-medium text-gray-700 hover:cursor-pointer' >start</span>
 				</div>
 			</div>
-
-			<div id='quiz-div' className='bg-'>
-
+			<div id='quiz-div-holder' className='hidden flex-col place-content-center justify-center conent-center items-center'>
+				<Card_learn_front word={"testFront"} f={testfun} />
+				<input id='learn-input' type="text" className='bg-white mt-8 py-2 sm:w-64 md:w-96 text-gray-700 rounded-md border focus:ring border-orange-300 px-7 focus:border-orange-300 focus:ring-orange-300 sm:text-sm text-center'>
+				</input>
 			</div>
+
 		</div>
 
     </>
