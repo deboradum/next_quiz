@@ -10,7 +10,7 @@ export default function Card_learn_front({word, f}:{word:string, f:()=>void}) {
   return (
     <>
       	<div onClick={() => f()} id='quiz-div-frontback' className=' rounded-md bg-orange-300 md:h-64 md:w-1/4 flex justify-center items-center hover:cursor-pointer' title='Click to flip card'>
-            <span className='text-5xl break-all px-5'>{word}</span>
+            <span id='card-span' className='text-5xl break-all px-5'>{word}</span>
         </div>
     </>
   )
