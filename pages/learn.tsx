@@ -118,15 +118,25 @@ export default function Learn() {
 			let cardList = [...learningCardsInfo];
 			while (1) {
 				let c = cardList[Math.floor(Math.random()*cardList.length)];
-				let c2 = Object.assign({}, c)
+				let cCopy = Object.assign({}, c);
 				if (c.repsLeft > 0){
-					setCurrentCard(c2);
+					setCurrentCard(cCopy);
 					break;
 				}
 			}
 
 		} else {
-		// Een state die bij houdt waar ik was
+			let cardList = [...learningCardsInfo];
+			let c_index = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
+			while (1) {
+				let c = cardList[(c_index + 1) % cardList.length];
+				if (c.repsLeft > 0) {
+					let cCopy = Object.assign({}, c);
+					setCurrentCard(cCopy);
+					break;
+				}
+				c_index++;
+			}
 		}
 	}
 
@@ -149,8 +159,8 @@ export default function Learn() {
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-green-600");
 				let cardList = [...learningCardsInfo];
-				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
-				cardList[c].repsLeft--;
+				let c_index = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
+				cardList[c_index].repsLeft--;
 				document.getElementById("next-btn")?.addEventListener("click", () =>{
 					setLearningCardsinfo(cardList);
 					(document.getElementById("learn-input") as HTMLInputElement).value = "";
