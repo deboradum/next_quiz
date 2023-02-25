@@ -19,19 +19,21 @@ export default function Learn() {
 	const [shuffleMode, setShuffleMode] = React.useState(true);
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
 	const [learningCardsInfo, setLearningCardsinfo] = React.useState([] as {front:string, back:string, repsLeft:number}[])
-	const [currentCard, setCurrentCard] = React.useState({front:"front", back:"back"})
+	const [currentCard, setCurrentCard] = React.useState({front:"", back:""})
 
 	useEffect(() => {
 		if (learningCardsInfo.length > 0) {
 			console.log(learningCardsInfo)
 			newWord();
-		} else {
-			console.log("LEARNING CARDS ARRAY IS LEEG")
 		}
 	},[learningCardsInfo]
 	)
 
-	useEffect(() => {console.log(currentCard)}, [currentCard])
+	useEffect(() => {
+		console.log("Newcard:", currentCard)
+		let cardspan = document.getElementById("card-span");
+		if (cardspan) cardspan.innerHTML = currentCard.front;
+	}, [currentCard])
 
 	function setShuffleState() {
 		if ((document.getElementById("shuffle_setter_on") as HTMLInputElement).checked) {
@@ -97,21 +99,31 @@ export default function Learn() {
 	}
 
 	function newWord() {
+		console.log("AAAAA")
+
 		document.getElementById("start-div")?.classList.add("hidden");
 		document.getElementById("quiz-div-holder")?.classList.remove("hidden");
 		document.getElementById("quiz-div-holder")?.classList.add("flex");
 		document.getElementById("quiz-div-holder")?.classList.add("min-h-screen");
+
 		let cardspan = document.getElementById("card-span");
 		if (cardspan) cardspan.classList.remove("text-red-400");
 		if (cardspan) cardspan.classList.remove("text-green-600");
-		if (cardspan) cardspan.classList.add("text-gray-700");
+		if (cardspan) cardspan.classList.add("text-white");
+
+		if (learningCardsInfo.every(obj => obj.repsLeft == 0)) {
+			if (cardspan) cardspan.innerHTML = ""
+			console.log("DONE!");
+			return
+		}
 
 		if (shuffleMode) {
 			let cardList = [...learningCardsInfo];
 			while (1) {
 				let c = cardList[Math.floor(Math.random()*cardList.length)];
-				if (c.repsLeft){
-					setCurrentCard(c);
+				let c2 = Object.assign({}, c)
+				if (c.repsLeft > 0){
+					setCurrentCard(c2);
 					break;
 				}
 			}
@@ -151,38 +163,58 @@ export default function Learn() {
 	}
 
 	function check_answer() {
+		console.log("checking..")
 		const answer = (document.getElementById("learn-input") as HTMLInputElement).value;
 		let cardspan = document.getElementById("card-span");
 		if (cardspan) cardspan.innerHTML= currentCard.back;
 		if (caseSensitive) {
 			if (answer == currentCard.back) {
+				console.log("correct")
 				if (cardspan) cardspan.classList.remove("text-red-400");
-				if (cardspan) cardspan.classList.remove("text-gray-700");
+				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-green-600");
 				let cardList = [...learningCardsInfo];
 				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back)
 				cardList[c].repsLeft--;
-				document.getElementById("next-btn")?.addEventListener("click", () => setLearningCardsinfo(cardList));
+				document.getElementById("next-btn")?.addEventListener("click", () =>{
+					setLearningCardsinfo(cardList);
+					(document.getElementById("learn-input") as HTMLInputElement).value = "";
+				}, {once : true});
 
 			} else {
+				console.log("incorrect")
 				if (cardspan) cardspan.classList.remove("text-green-600");
-				if (cardspan) cardspan.classList.remove("text-gray-700");
+				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
+				let cardList = [...learningCardsInfo];
+				document.getElementById("next-btn")?.addEventListener("click", () =>{
+					setLearningCardsinfo(cardList);
+					(document.getElementById("learn-input") as HTMLInputElement).value = "";;
+				}, {once : true});
 			}
 		} else {
 			if (answer.toLowerCase() == currentCard.back.toLowerCase()) {
+				console.log("correct")
 				if (cardspan) cardspan.classList.remove("text-red-400");
-				if (cardspan) cardspan.classList.remove("text-gray-700");
+				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-green-600");
 				let cardList = [...learningCardsInfo];
 				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back)
 				cardList[c].repsLeft--;
-				document.getElementById("next-btn")?.addEventListener("click", () => setLearningCardsinfo(cardList));
-				// setLearningCardsinfo(cardList);
+				document.getElementById("next-btn")?.addEventListener("click", () =>{
+					setLearningCardsinfo(cardList);
+					(document.getElementById("learn-input") as HTMLInputElement).value = "";
+				}, {once : true});
 			} else {
+				console.log("incorrect")
 				if (cardspan) cardspan.classList.remove("text-green-600");
-				if (cardspan) cardspan.classList.remove("text-gray-700");
+				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
+				let cardList = [...learningCardsInfo];
+				document.getElementById("next-btn")?.addEventListener("click", () =>{
+					setLearningCardsinfo(cardList);
+					(document.getElementById("learn-input") as HTMLInputElement).value = "";
+				}, {once : true});
 			}
 		}
 	}
