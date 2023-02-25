@@ -20,17 +20,16 @@ export default function Learn() {
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
 	const [learningCardsInfo, setLearningCardsinfo] = React.useState([] as {front:string, back:string, repsLeft:number}[])
 	const [currentCard, setCurrentCard] = React.useState({front:"", back:""})
+	const [stats, setstats] = React.useState([] as {front:string, back:string, num_wrongs:number}[])
 
 	useEffect(() => {
 		if (learningCardsInfo.length > 0) {
-			console.log(learningCardsInfo)
 			newWord();
 		}
 	},[learningCardsInfo]
 	)
 
 	useEffect(() => {
-		console.log("Newcard:", currentCard)
 		let cardspan = document.getElementById("card-span");
 		if (cardspan) cardspan.innerHTML = currentCard.front;
 	}, [currentCard])
@@ -99,8 +98,6 @@ export default function Learn() {
 	}
 
 	function newWord() {
-		console.log("AAAAA")
-
 		document.getElementById("start-div")?.classList.add("hidden");
 		document.getElementById("quiz-div-holder")?.classList.remove("hidden");
 		document.getElementById("quiz-div-holder")?.classList.add("flex");
@@ -112,7 +109,7 @@ export default function Learn() {
 		if (cardspan) cardspan.classList.add("text-white");
 
 		if (learningCardsInfo.every(obj => obj.repsLeft == 0)) {
-			if (cardspan) cardspan.innerHTML = ""
+			if (cardspan) cardspan.innerHTML = "";
 			console.log("DONE!");
 			return
 		}
@@ -142,39 +139,17 @@ export default function Learn() {
 		setLearningCardsinfo(cards);
 	}
 
-	function startLearning() {
-		if (toLearnList.length) {
-			document.getElementById("start-div")?.classList.add("hidden");
-			document.getElementById("quiz-div-holder")?.classList.remove("hidden");
-			document.getElementById("quiz-div-holder")?.classList.add("flex");
-			document.getElementById("quiz-div-holder")?.classList.add("min-h-screen");
-			// createLearningCards();
-			// newWord();
-		} else {
-			const textDiv = document.getElementById("text-div");
-			if (!textDiv?.firstChild) {
-				let el = document.createElement("p");
-				el.id = "nothing-uploaded";
-				el.innerHTML = "<br /> Please upload a word list";
-				el.classList.add("text-red-400");
-				textDiv?.appendChild(el);
-			}
-		}
-	}
-
 	function check_answer() {
-		console.log("checking..")
 		const answer = (document.getElementById("learn-input") as HTMLInputElement).value;
 		let cardspan = document.getElementById("card-span");
 		if (cardspan) cardspan.innerHTML= currentCard.back;
 		if (caseSensitive) {
 			if (answer == currentCard.back) {
-				console.log("correct")
 				if (cardspan) cardspan.classList.remove("text-red-400");
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-green-600");
 				let cardList = [...learningCardsInfo];
-				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back)
+				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
 				cardList[c].repsLeft--;
 				document.getElementById("next-btn")?.addEventListener("click", () =>{
 					setLearningCardsinfo(cardList);
@@ -182,7 +157,6 @@ export default function Learn() {
 				}, {once : true});
 
 			} else {
-				console.log("incorrect")
 				if (cardspan) cardspan.classList.remove("text-green-600");
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
@@ -194,19 +168,17 @@ export default function Learn() {
 			}
 		} else {
 			if (answer.toLowerCase() == currentCard.back.toLowerCase()) {
-				console.log("correct")
 				if (cardspan) cardspan.classList.remove("text-red-400");
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-green-600");
 				let cardList = [...learningCardsInfo];
-				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back)
+				let c = cardList.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
 				cardList[c].repsLeft--;
 				document.getElementById("next-btn")?.addEventListener("click", () =>{
 					setLearningCardsinfo(cardList);
 					(document.getElementById("learn-input") as HTMLInputElement).value = "";
 				}, {once : true});
 			} else {
-				console.log("incorrect")
 				if (cardspan) cardspan.classList.remove("text-green-600");
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
