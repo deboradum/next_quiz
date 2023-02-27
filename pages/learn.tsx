@@ -10,6 +10,7 @@ import { stringify } from 'querystring'
 import Create_input_div from '@/components/create_input_div'
 import { createReadStream } from 'fs'
 import Card_learn_front from '@/components/card_learn_front'
+import Stats_cards from '@/components/stats_cards'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,11 +28,6 @@ export default function Learn() {
 			newWord();
 		}
 	},[learningCardsInfo]
-	)
-
-	useEffect(() => {
-		console.log(stats)
-	},[stats]
 	)
 
 	useEffect(() => {
@@ -76,7 +72,6 @@ export default function Learn() {
 						let frontC = frontBack[0];
 						let backC = frontBack[1];
 						let c = { front: frontC, back: backC };
-						// cards.push(c)
 						cards.push(c);
 					}
 				});
@@ -115,7 +110,9 @@ export default function Learn() {
 
 		if (learningCardsInfo.every(obj => obj.repsLeft == 0)) {
 			if (cardspan) cardspan.innerHTML = "";
-			console.log("DONE!");
+			document.getElementById("start-div")?.classList.add("hidden");
+			document.getElementById("quiz-div-holder")?.classList.add("hidden");
+			document.getElementById("stats-div")?.classList.remove("hidden");
 			return
 		}
 
@@ -276,6 +273,7 @@ export default function Learn() {
 					<span className='text-md font-medium text-gray-700 hover:cursor-pointer'>start</span>
 				</div>
 			</div>
+			{/* Quiz mode div */}
 			<div id='quiz-div-holder' className='hidden flex-col place-content-center justify-center conent-center items-center'>
 				<Card_learn_front word={currentCard.front} f={check_answer} />
 				<input id='learn-input' type="text" className='bg-white mt-8 py-2 sm:w-64 md:w-96 text-gray-700 rounded-md border focus:ring border-orange-300 px-7 focus:border-orange-300 focus:ring-orange-300 sm:text-sm text-center'>
@@ -283,6 +281,17 @@ export default function Learn() {
 				<div id='next-btn' className='w-fit text-center mt-2 mb-20 rounded-md shadow-sm bg-white hover:bg-slate-100 hover:cursor-pointer py-2 px-10 self-center group'>
 					<span className='text-md font-medium text-gray-700 hover:cursor-pointer'>next</span>
 				</div>
+			</div>
+			{/* Stats div */}
+			<div id='stats-div' className='hidden sm:w-full md:w-2/4 flex flex-col justify-around mx-auto'>
+				<div className='my-4 flex flex-row justify-around'>
+					<span className="text-md font-medium text-gray-700">Front</span>
+					<span className="text-md font-medium text-gray-700">Errors</span>
+					<span className="text-md font-medium text-gray-700">Back</span>
+				</div>
+				{stats.map(c => (
+						<Stats_cards {...c} key={Math.random()} />
+				))}
 			</div>
 
 		</div>

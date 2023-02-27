@@ -6,7 +6,8 @@ import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Learn_input_div({front, back}:{front:string, back:string}) {
+export default function Stats_cards({front, back, num_wrongs}:{front:string, back:string, num_wrongs:number}) {
+    const colorClass = num_wrongs ? 'text-red-400' : 'text-green-600';
   return (
     <>
       	<div>
@@ -14,6 +15,9 @@ export default function Learn_input_div({front, back}:{front:string, back:string
                 <div className="mt-1 rounded-md shadow-sm w-5/12">
                     <input value={front} disabled name='front-card' type="text" className="bg-white py-2 w-full text-gray-700 rounded-md border-gray-300 pl-7 pr-12 focus:border-orange-300 focus:ring-orange-300 sm:text-sm" />
                 </div>
+                <span className={colorClass} >
+                    {num_wrongs}
+                </span>
                 <div className="mt-1 rounded-md shadow-sm w-5/12">
                     <input value={back} disabled name='back-card' type="text" className='bg-white py-2 w-full text-gray-700 rounded-md border-gray-300 pl-7 pr-12 focus:border-orange-300 focus:ring-orange-300 sm:text-sm' />
                 </div>
