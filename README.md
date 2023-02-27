@@ -10,3 +10,7 @@ of the flashcards. When all the cards are correct, the user will receive some st
 
 For this project I used NextJS with TypeScript and Tailwind. NextJS was completely new for me, although I did have previous
 experience with ReactJS.
+
+## Demo:
+https://user-images.githubusercontent.com/88938032/221571682-81a81be6-378c-4fbb-b1db-e5efef472168.mp4
+
