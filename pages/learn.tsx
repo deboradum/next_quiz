@@ -20,13 +20,18 @@ export default function Learn() {
 	const [caseSensitive, setCaseSensitive] = React.useState(false);
 	const [learningCardsInfo, setLearningCardsinfo] = React.useState([] as {front:string, back:string, repsLeft:number}[])
 	const [currentCard, setCurrentCard] = React.useState({front:"", back:""})
-	const [stats, setstats] = React.useState([] as {front:string, back:string, num_wrongs:number}[])
+	const [stats, setStats] = React.useState([] as {front:string, back:string, num_wrongs:number}[])
 
 	useEffect(() => {
 		if (learningCardsInfo.length > 0) {
 			newWord();
 		}
 	},[learningCardsInfo]
+	)
+
+	useEffect(() => {
+		console.log(stats)
+	},[stats]
 	)
 
 	useEffect(() => {
@@ -142,11 +147,15 @@ export default function Learn() {
 
 	function createLearningCards() {
 		let cards:{front: string, back:string, repsLeft:number}[] = [];
+		let cardsStats:{front: string, back:string, num_wrongs:number}[] = [];
 		toLearnList.map(c => {
 			const newC: {front: string, back:string, repsLeft:number} = {front:c.front, back:c.back, repsLeft:numRepititions};
+			const newCS: {front: string, back:string, num_wrongs:number} = {front:c.front, back:c.back, num_wrongs:0};
 			cards.push(newC);
+			cardsStats.push(newCS);
 		});
 		setLearningCardsinfo(cards);
+		setStats(cardsStats);
 	}
 
 	function check_answer() {
@@ -171,6 +180,10 @@ export default function Learn() {
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
 				let cardList = [...learningCardsInfo];
+				let cardStats = [...stats];
+				let ci = cardStats.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
+				cardStats[ci].num_wrongs++;
+				setStats(cardStats);
 				document.getElementById("next-btn")?.addEventListener("click", () =>{
 					setLearningCardsinfo(cardList);
 					(document.getElementById("learn-input") as HTMLInputElement).value = "";;
@@ -193,6 +206,10 @@ export default function Learn() {
 				if (cardspan) cardspan.classList.remove("text-white");
 				if (cardspan) cardspan.classList.add("text-red-400");
 				let cardList = [...learningCardsInfo];
+				let cardStats = [...stats];
+				let ci = cardStats.findIndex(item => item.front === currentCard.front && item.back === currentCard.back);
+				cardStats[ci].num_wrongs++;
+				setStats(cardStats);
 				document.getElementById("next-btn")?.addEventListener("click", () =>{
 					setLearningCardsinfo(cardList);
 					(document.getElementById("learn-input") as HTMLInputElement).value = "";
