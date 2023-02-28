@@ -15,9 +15,9 @@ export default function Home() {
         	<meta name="viewport" content="width=device-width, initial-scale=1" />
         	<link rel="icon" href="/favicon.ico" />
       	</Head>
-      	<div className='bg-slate-50 flex items-center justify-around min-h-screen'>
+      	<div className='bg-slate-50 flex sm:flex-col md:flex-row items-center justify-around min-h-screen'>
 		  	<Link href="/create">
-			<div className='bg-orange-300 rounded-md py-40 px-56 text-center text-5xl '>
+			<div className='bg-orange-300 rounded-md md:py-40 md:px-56 text-center text-5xl '>
 				<span>
 					Create
 				</span>
@@ -25,7 +25,7 @@ export default function Home() {
 			</Link>
 
 			<Link href="/learn">
-			<div className='bg-orange-300 rounded-md py-40 px-56 text-center text-5xl '>
+			<div className='bg-orange-300 rounded-md md:py-40 md:px-56 text-center text-5xl '>
 				<span>
 					Learn
 				</span>
